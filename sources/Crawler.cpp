@@ -44,7 +44,7 @@ void crawler::init(int argc, char **argv){
     string output_s = vm[OUTPUT].as<string>();
 
     crawler a;
-    a.start(url, depth, network_threads, parser_threads, output);
+    a.start(url, depth, network_threads, parser_threads, output_s);
 }
 
 void crawler::start(const string &link, unsigned depth,
