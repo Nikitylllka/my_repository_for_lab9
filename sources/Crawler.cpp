@@ -1,6 +1,52 @@
-// Copyright 2018 Your Name <your_email>
+//
+// Created by ...
+//
 
-#include <header.hpp>
+#include "Crawler.h"
+
+void crawler::init(int argc, char **argv){
+    po::options_description desc(SHORT_DESCRIPTION);
+    desc.add_options()
+            ("help", info_HELP)
+            ("url", po::value<string>(), info_URL)
+            (DEPTH, po::value<unsigned>(), info_DEPTH)
+            ("network_threads", po::value<unsigned>(), info_NETWORK_THREADS)
+            (PARSER_THREADS, po::value<unsigned>(), info_PARSER_THREADS)
+            (OUTPUT, po::value<string>(), info_OUTPUT);
+
+    po::variables_map vm;
+    try {
+        po::store(po::parse_command_line(argc, argv, desc), vm);
+        po::notify(vm);
+    }
+
+    catch (po::error &e) {
+        cout << e.what() << endl;
+        cout << desc << endl;
+        exit(1);
+    }
+    if (vm.count(HELP)) {
+        cout << desc << endl;
+        exit(1);
+    }
+    if (!vm.count(URL)
+        || !vm.count(DEPTH)
+        || !vm.count(NETWORK_THREADS)
+        || !vm.count(PARSER_THREADS)
+        || !vm.count(OUTPUT)) {
+        cout << "error: bad format" << endl << desc << endl;
+        exit(1);
+    }
+
+    string url = vm["url"].as<string>();
+    unsigned depth = vm["depth"].as<unsigned>();
+    unsigned network_threads = vm[NETWORK_THREADS].as<unsigned>();
+    unsigned parser_threads = vm[PARSER_THREADS].as<unsigned>();
+    string output = vm[OUTPUT].as<string>();
+
+    crawler a;
+    a.start(url, depth, network_threads, parser_threads, output);
+}
 
 void crawler::start(const string &link, unsigned depth,
            unsigned network_threads, unsigned parser_threads,
@@ -313,54 +359,4 @@ void crawler::log_init(const string &dir)
                     boost::log::keywords::format =
                             output_format);
     boost::log::add_common_attributes();
-}
-
-int main(int argc, char **argv) {
-    po::options_description desc(SHORT_DESCRIPTION);
-    desc.add_options()
-            (HELP, info_HELP)
-            (URL, po::value<string>(),
-             info_URL)
-            (DEPTH, po::value<unsigned>(),
-             info_DEPTH)
-            (NETWORK_THREADS, po::value<unsigned>(),
-             info_NETWORK_THREADS)
-            (PARSER_THREADS, po::value<unsigned>(),
-             info_PARSER_THREADS)
-            (OUTPUT, po::value<string>(),
-             info_OUTPUT);
-
-    po::variables_map vm;
-    try {
-        po::store(po::parse_command_line(argc, argv, desc), vm);
-        po::notify(vm);
-    }
-
-    catch (po::error &e) {
-        cout << e.what() << endl;
-        cout << desc << endl;
-        return 1;
-    }
-    if (vm.count(HELP)) {
-        cout << desc << endl;
-        return 1;
-    }
-    if (!vm.count(URL)
-        || !vm.count(DEPTH)
-        || !vm.count(NETWORK_THREADS)
-        || !vm.count(PARSER_THREADS)
-        || !vm.count(OUTPUT)) {
-        cout << "error: bad format" << endl << desc << endl;
-         return 1;
-    }
-
-    string url = vm[URL].as<string>();
-    unsigned depth = vm[DEPTH].as<unsigned>();
-    unsigned network_threads = vm[NETWORK_THREADS].as<unsigned>();
-    unsigned parser_threads = vm[PARSER_THREADS].as<unsigned>();
-    string output = vm[OUTPUT].as<string>();
-
-    crawler a;
-    a.start(url, depth, network_threads, parser_threads, output);
-    return 0;
 }

@@ -1,7 +1,7 @@
-// Copyright 2018 Your Name <your_email>
+// Created by ...
 
-#ifndef INCLUDE_HEADER_HPP_
-#define INCLUDE_HEADER_HPP_
+#ifndef LAB_09_CRAWLER_H
+#define LAB_09_CRAWLER_H
 
 #include <iostream>
 #include <boost/beast.hpp>
@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 #include <atomic>
-
 
 using tcp = boost::asio::ip::tcp;
 namespace ssl = boost::asio::ssl;
@@ -55,12 +54,12 @@ const char NETWORK_THREADS[] = "network_threads";
 const char PARSER_THREADS[] = "parser_threads";
 const char OUTPUT[] = "output";
 
-const char info_HELP[] = "адрес HTML страницы";
+const char info_HELP[] = "0 помощи";
 const char info_URL[] = "адрес HTML страницы";
-const char info_DEPTH[] = "адрес HTML страницы";
-const char info_NETWORK_THREADS[] = "адрес HTML страницы";
-const char info_PARSER_THREADS[] = "адрес HTML страницы";
-const char info_OUTPUT[] = "адрес HTML страницы";
+const char info_DEPTH[] = "depth";
+const char info_NETWORK_THREADS[] = "network threads";
+const char info_PARSER_THREADS[] = "parser threads";
+const char info_OUTPUT[] = "output";
 
 const char err_msg[] = "err_format";
 
@@ -85,6 +84,9 @@ struct task{
 
 class crawler{
 public:
+
+    void init(int argc, char **argv);
+
     void start(const string &link, unsigned depth,
                unsigned network_threads, unsigned parser_threads,
                const string &dir);
@@ -134,10 +136,13 @@ private:
     mutex future_mutex;
     mutex output_mutex;
     mutex to_search_images_mutex;
+	
+
 
     atomic_uint check = 0;
 
     atomic_bool end_network = false;
 };
 
-#endif // INCLUDE_HEADER_HPP_
+
+#endif //LAB_09_CRAWLER_H
